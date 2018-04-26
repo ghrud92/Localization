@@ -1,5 +1,6 @@
 package com.ho.localization;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
@@ -56,6 +57,12 @@ public class MainActivity extends AppCompatActivity {
     private void stopMove ()
     {
 
+    }
+
+    @OnClick(R.id.recognize_button)
+    public void goRecognize (Button button)
+    {
+        startActivity(new Intent(this, MoveRecognitionActivity.class));
     }
 
     @OnClick(R.id.stop_button)
