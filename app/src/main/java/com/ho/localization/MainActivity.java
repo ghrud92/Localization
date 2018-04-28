@@ -1,10 +1,20 @@
 package com.ho.localization;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Path;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import butterknife.BindView;
@@ -12,12 +22,62 @@ import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
 
-    int x, y;   // current location
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        RelativeLayout relativeLayout = (RelativeLayout)inflater.inflate(R.layout.activity_main, null);
+
+        DrawView drawView = new DrawView(this);
+        RelativeLayout.LayoutParams drawParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        drawView.setLayoutParams(drawParams);
+        drawView.setBackgroundColor(Color.TRANSPARENT);
+
+        relativeLayout.addView(drawView);
+
+        setContentView(relativeLayout);
+    }
+
+    private class DrawView extends View {
+        Paint paint;
+        Path path;
+
+        public DrawView(Context context) {
+            super(context);
+
+            paint = new Paint();
+            paint.setStrokeWidth(5f);
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setColor(Color.BLACK);
+
+            path = new Path();
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            //canvas.drawColor(Color.TRANSPARENT);
+            canvas.drawPath(path, paint);
+        }
+
+        @Override
+        public boolean onTouchEvent(MotionEvent event) {
+            float x = event.getX();
+            float y = event.getY();
+
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    path.moveTo(x, y);
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    path.lineTo(x, y);
+                case MotionEvent.ACTION_UP:
+                    break;
+            }
+            invalidate();
+
+            return true;
+        }
     }
 
     private void buttonClick (int number)
@@ -63,6 +123,18 @@ public class MainActivity extends AppCompatActivity {
     public void goRecognize (Button button)
     {
         startActivity(new Intent(this, MoveRecognitionActivity.class));
+    }
+
+    @OnClick(R.id.wifi_button)
+    public void goWifi (Button button)
+    {
+        startActivity(new Intent(this, WifiScanActivity.class));
+    }
+
+    @OnClick(R.id.draw_button)
+    public void goDraw (Button button)
+    {
+        startActivity(new Intent(this, DrawActivity.class));
     }
 
     @OnClick(R.id.stop_button)
