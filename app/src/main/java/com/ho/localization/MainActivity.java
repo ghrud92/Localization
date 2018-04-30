@@ -18,6 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,14 +30,15 @@ public class MainActivity extends AppCompatActivity {
         LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         RelativeLayout relativeLayout = (RelativeLayout)inflater.inflate(R.layout.activity_main, null);
 
-        DrawView drawView = new DrawView(this);
-        RelativeLayout.LayoutParams drawParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        drawView.setLayoutParams(drawParams);
-        drawView.setBackgroundColor(Color.TRANSPARENT);
+//        DrawView drawView = new DrawView(this);
+//        RelativeLayout.LayoutParams drawParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+//        drawView.setLayoutParams(drawParams);
+//        drawView.setBackgroundColor(Color.TRANSPARENT);
 
-        relativeLayout.addView(drawView);
+//        relativeLayout.addView(drawView);
 
         setContentView(relativeLayout);
+        ButterKnife.bind(this);
     }
 
     private class DrawView extends View {
@@ -135,6 +137,12 @@ public class MainActivity extends AppCompatActivity {
     public void goDraw (Button button)
     {
         startActivity(new Intent(this, DrawActivity.class));
+    }
+
+    @OnClick(R.id.accelerometer_button)
+    public void goAccelerometer (Button button)
+    {
+        startActivity(new Intent(this, AccelerometerActivity.class));
     }
 
     @OnClick(R.id.stop_button)

@@ -17,7 +17,7 @@ public class WifiScanActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //registerReceiver(rssiReceiver, new IntentFilter(WifiManager.RSSI_CHANGED_ACTION));
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_wifi_scan);
 
         Button b1 = (Button)findViewById(R.id.button);
         b1.setOnClickListener(new Button.OnClickListener() {

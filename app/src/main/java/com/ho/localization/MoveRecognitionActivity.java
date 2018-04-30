@@ -6,12 +6,14 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.LinkedList;
 
 import butterknife.BindView;
+import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MoveRecognitionActivity extends AppCompatActivity {
@@ -30,6 +32,7 @@ public class MoveRecognitionActivity extends AppCompatActivity {
             // Called when there is a new SensorEvent. SensorEvent has values of sensor
             switch (event.sensor.getType()) {
                 case Sensor.TYPE_ACCELEROMETER :
+                    Log.d("#####", "accelerometer changed");
                     float[] temp = {event.values[0], event.values[1], event.values[2]};
                     data.add(temp);
                     if (data.size() > time*1000000/samplingPeriodUs) {
@@ -48,6 +51,7 @@ public class MoveRecognitionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_move_recognition);
+        ButterKnife.bind(this);
         SM = (SensorManager)getSystemService(SENSOR_SERVICE);
         SM.registerListener(sL, SM.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), samplingPeriodUs);
     }

@@ -130,4 +130,11 @@
         android:layout_below="@id/wifi_button"
         android:text="DRAW"/>
 
+    <Button
+        android:id="@+id/accelerometer_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/draw_button"
+        android:text="ACCELEROMETER"/>
+
 </RelativeLayout>
