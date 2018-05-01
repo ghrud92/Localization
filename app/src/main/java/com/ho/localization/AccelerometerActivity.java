@@ -53,4 +53,10 @@ public class AccelerometerActivity extends AppCompatActivity {
         , manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
         , 50000);
     }
+
+    @Override
+    protected void onDestroy() {
+        manager.unregisterListener(listener);
+        super.onDestroy();
+    }
 }

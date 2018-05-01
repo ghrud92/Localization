@@ -22,7 +22,8 @@
         <activity android:name=".MoveRecognitionActivity" />
         <activity android:name=".WifiScanActivity" />
         <activity android:name=".DrawActivity" />
-        <activity android:name=".AccelerometerActivity"></activity>
+        <activity android:name=".AccelerometerActivity" />
+        <activity android:name=".MagneticActivity"></activity>
     </application>
 
 </manifest>
