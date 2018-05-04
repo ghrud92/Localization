@@ -83,12 +83,10 @@ public class MagneticActivity extends AppCompatActivity {
 
     private void updateDirection() {
         float[] temp = new float[9];
-        float[] R = new float[9];
 
         // Load rotation matrix into R
         SensorManager.getRotationMatrix(temp, null, gravity, magnetic);
         // Return the orientation values
-//        float[] values = new float[3];
         SensorManager.getOrientation(temp, values);
         // Convert to degrees
         for (int i = 0; i < values.length; i++) {

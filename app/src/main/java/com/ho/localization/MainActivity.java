@@ -27,6 +27,8 @@ import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
 
+    enum Direction {UP, RIGHT, DOWN, LEFT}
+
     private SensorManager manager;
     private SensorEventListener listener;
     private Sensor accelerometer, magneticField, gravitySensor;
@@ -35,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
     private float[] accel;
     private float[] gravity;
     private float[] degrees;
+    private float velocity;
+
+    final float THROUGHPUT = 0.1f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +62,20 @@ public class MainActivity extends AppCompatActivity {
         listener = new SensorEventListener() {
             @Override
             public void onSensorChanged(SensorEvent event) {
-
+                switch (event.sensor.getType()) {
+                    case Sensor.TYPE_ACCELEROMETER:
+                        accel = event.values.clone();
+                        break;
+                    case Sensor.TYPE_MAGNETIC_FIELD:
+                        magnetic = event.values.clone();
+                        break;
+                    case Sensor.TYPE_GRAVITY:
+                        gravity = event.values.clone();
+                        break;
+                }
+                if (accel != null && magnetic != null && gravity != null) {
+                    drawPath();
+                }
             }
 
             @Override
@@ -69,6 +87,49 @@ public class MainActivity extends AppCompatActivity {
         magneticField = manager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         gravitySensor = manager.getDefaultSensor(Sensor.TYPE_GRAVITY);
         degrees = new float[3];
+        velocity = 0;
+    }
+
+    private void drawPath() {
+        float[] temp = new float[9];
+
+        // Load rotation matrix into temp
+        SensorManager.getRotationMatrix(temp, null, gravity, magnetic);
+        // Return the orientation values
+        SensorManager.getOrientation(temp, degrees);
+        // Convert to degrees
+        for (int i = 0; i < degrees.length; i++) {
+            degrees[i] = (float)Math.toDegrees(degrees[i]);
+        }
+
+        Direction direction = getDirection(degrees[0]);
+        accel[0] -= gravity[0];
+        accel[1] -= gravity[1];
+        accel[2] -= gravity[2];
+        // only think about z-axis velocity
+        if (Math.abs(accel[2]) > THROUGHPUT) {
+            velocity += accel[2] * 0.05;
+        }
+        draw(direction);
+        // Display the compass direction
+//        direction.setText(getDirectionFromDegree(values[0]) + values[0]);
+        // Display the raw values
+//        value.setText(String.format("Azimuth: %1$1.2f, Pitch: %2$1.2f, Roll: %3$1.2f", values[0], values[1], values[2]));
+    }
+
+    private Direction getDirection (float azimuth) {
+        if (azimuth <= -85 && azimuth > -175)
+            return Direction.DOWN;
+        else if (azimuth <= 5 && azimuth > -85)
+            return Direction.LEFT;
+        else if (azimuth <= 95 && azimuth > 5)
+            return Direction.UP;
+        else
+            return Direction.RIGHT;
+    }
+
+    private void draw(Direction direction) {
+
     }
 
     @Override
