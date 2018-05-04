@@ -6,6 +6,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -23,6 +27,15 @@ import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
 
+    private SensorManager manager;
+    private SensorEventListener listener;
+    private Sensor accelerometer, magneticField, gravitySensor;
+
+    private float[] magnetic;
+    private float[] accel;
+    private float[] gravity;
+    private float[] degrees;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,6 +52,37 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(relativeLayout);
         ButterKnife.bind(this);
+
+        manager = (SensorManager)getSystemService(SENSOR_SERVICE);
+        listener = new SensorEventListener() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
+            }
+        };
+        accelerometer = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        magneticField = manager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        gravitySensor = manager.getDefaultSensor(Sensor.TYPE_GRAVITY);
+        degrees = new float[3];
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        manager.registerListener(listener, accelerometer, 50000);
+        manager.registerListener(listener, magneticField, 50000);
+        manager.registerListener(listener, gravitySensor, 50000);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        manager.unregisterListener(listener);
     }
 
     private class DrawView extends View {
@@ -143,6 +187,12 @@ public class MainActivity extends AppCompatActivity {
     public void goAccelerometer (Button button)
     {
         startActivity(new Intent(this, AccelerometerActivity.class));
+    }
+
+    @OnClick(R.id.magnetic_button)
+    public void goMagnetic (Button button)
+    {
+        startActivity(new Intent(this, MagneticActivity.class));
     }
 
     @OnClick(R.id.stop_button)

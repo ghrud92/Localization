@@ -6,15 +6,22 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class MagneticActivity extends AppCompatActivity {
 
     @BindView(R.id.direction) TextView direction;
     @BindView(R.id.value) TextView value;
+    @BindView(R.id.save1) TextView save1;
+    @BindView(R.id.save2) TextView save2;
+    @BindView(R.id.save3) TextView save3;
+    @BindView(R.id.save4) TextView save4;
+    @BindView(R.id.save5) TextView save5;
 
     SensorManager manager;
     SensorEventListener listener;
@@ -22,6 +29,7 @@ public class MagneticActivity extends AppCompatActivity {
 
     float[] gravity;
     float[] magnetic;
+    float[] values;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,13 +65,14 @@ public class MagneticActivity extends AppCompatActivity {
         };
         accelerometer = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magneticField = manager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        values = new float[3];
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        manager.registerListener(listener, accelerometer, SensorManager.SENSOR_DELAY_UI);
-        manager.registerListener(listener, magneticField, SensorManager.SENSOR_DELAY_UI);
+        manager.registerListener(listener, accelerometer, 50000);
+        manager.registerListener(listener, magneticField, 50000);
     }
 
     @Override
@@ -78,18 +87,15 @@ public class MagneticActivity extends AppCompatActivity {
 
         // Load rotation matrix into R
         SensorManager.getRotationMatrix(temp, null, gravity, magnetic);
-        // Remap to camera's point-of-view
-        SensorManager.remapCoordinateSystem(temp, SensorManager.AXIS_X, SensorManager.AXIS_Z, R);
         // Return the orientation values
-        float[] values = new float[3];
-        SensorManager.getOrientation(R, values);
+//        float[] values = new float[3];
+        SensorManager.getOrientation(temp, values);
         // Convert to degrees
         for (int i = 0; i < values.length; i++) {
-            Double degree = (values[i] * 180) / Math.PI;
-            values[i] = degree.floatValue();
+            values[i] = (float)Math.toDegrees(values[i]);
         }
         // Display the compass direction
-        direction.setText(getDirectionFromDegree(values[0]));
+        direction.setText(getDirectionFromDegree(values[0]) + values[0]);
         // Display the raw values
         value.setText(String.format("Azimuth: %1$1.2f, Pitch: %2$1.2f, Roll: %3$1.2f", values[0], values[1], values[2]));
     }
@@ -105,5 +111,43 @@ public class MagneticActivity extends AppCompatActivity {
         if(degrees >= -67.5 && degrees < -22.5) { return "NW"; }
 
         return null;
+    }
+
+    @OnClick(R.id.save_button)
+    public void saveClick(Button button) {
+        SaveProcess thread = new SaveProcess();
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    class SaveProcess extends Thread {
+        @Override
+        public void run() {
+            final String[] result = new String[5];
+            try {
+                sleep(5000);
+                result[0] = String.format("Azimuth: %1$1.2f, Pitch: %2$1.2f, Roll: %3$1.2f", values[0], values[1], values[2]);
+                sleep(1000);
+                result[1] = String.format("Azimuth: %1$1.2f, Pitch: %2$1.2f, Roll: %3$1.2f", values[0], values[1], values[2]);
+                sleep(1000);
+                result[2] = String.format("Azimuth: %1$1.2f, Pitch: %2$1.2f, Roll: %3$1.2f", values[0], values[1], values[2]);
+                sleep(1000);
+                result[3] = String.format("Azimuth: %1$1.2f, Pitch: %2$1.2f, Roll: %3$1.2f", values[0], values[1], values[2]);
+                sleep(1000);
+                result[4] = String.format("Azimuth: %1$1.2f, Pitch: %2$1.2f, Roll: %3$1.2f", values[0], values[1], values[2]);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    save1.setText(result[0]);
+                    save2.setText(result[1]);
+                    save3.setText(result[2]);
+                    save4.setText(result[3]);
+                    save5.setText(result[4]);
+                }
+            });
+        }
     }
 }

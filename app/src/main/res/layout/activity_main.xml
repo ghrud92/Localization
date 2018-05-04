@@ -137,4 +137,11 @@
         android:layout_below="@id/draw_button"
         android:text="ACCELEROMETER"/>
 
+    <Button
+        android:id="@+id/magnetic_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/accelerometer_button"
+        android:text="MAGNETIC"/>
+
 </RelativeLayout>
