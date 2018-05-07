@@ -18,7 +18,7 @@
         android:layout_height="20dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="216dp"
+        android:layout_marginTop="218dp"
         android:scaleType="centerInside"
         android:src="@drawable/circle_button" />
 
@@ -28,7 +28,7 @@
         android:layout_height="20dp"
         android:layout_alignBottom="@id/button1"
         android:layout_toRightOf="@id/button1"
-        android:layout_marginLeft="67dp"
+        android:layout_marginLeft="62dp"
         android:scaleType="centerInside"
         android:src="@drawable/circle_button" />
 
@@ -39,7 +39,7 @@
         android:layout_alignParentLeft="true"
         android:layout_marginLeft="15dp"
         android:layout_below="@id/button1"
-        android:layout_marginTop="58dp"
+        android:layout_marginTop="59dp"
         android:scaleType="centerInside"
         android:src="@drawable/circle_button" />
 
@@ -50,7 +50,7 @@
         android:layout_below="@id/button1"
         android:layout_marginTop="52dp"
         android:layout_alignParentLeft="true"
-        android:layout_marginLeft="108dp"
+        android:layout_marginLeft="103dp"
         android:scaleType="centerInside"
         android:src="@drawable/circle_button" />
 
@@ -78,7 +78,7 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_below="@id/button5"
-        android:layout_marginTop="112dp"
+        android:layout_marginTop="105dp"
         android:layout_alignLeft="@id/button5"
         android:scaleType="centerInside"
         android:src="@drawable/circle_button" />
@@ -97,11 +97,11 @@
         android:layout_width="20dp"
         android:layout_height="20dp"
         android:layout_below="@id/button7"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="47dp"
         android:layout_alignLeft="@id/button5"
         android:scaleType="centerInside"
         android:src="@drawable/circle_button" />
-
+<!--
     <Button
         android:id="@+id/stop_button"
         android:layout_width="wrap_content"
@@ -152,7 +152,8 @@
         android:layout_marginTop="10dp"
         android:layout_marginRight="10dp"
         android:text="0"
-        android:textSize="20dp"/>
+        android:textSize="20dp"
+        android:background="@android:color/white"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -170,7 +171,8 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="10dp"
         android:text="0"
-        android:textSize="20dp"/>
+        android:textSize="20dp"
+        android:background="@android:color/white"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -180,4 +182,14 @@
         android:text="Direction"
         android:textSize="20dp"/>
 
+    <TextView
+        android:id="@+id/roll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/direction"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:background="@android:color/white"
+        android:text="0"/>
+-->
 </RelativeLayout>

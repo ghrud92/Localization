@@ -31,8 +31,9 @@ public class MainActivity extends AppCompatActivity {
 
     enum Direction {UP, RIGHT, DOWN, LEFT}
 
-    @BindView(R.id.velocity) TextView velocityView;
-    @BindView(R.id.direction) TextView directionView;
+//    @BindView(R.id.velocity) TextView velocityView;
+//    @BindView(R.id.direction) TextView directionView;
+//    @BindView(R.id.roll) TextView rollView;
     private DrawView drawView;
 
     private SensorManager manager;
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     private float[] degrees;
     private float velocity;
 
-    final float THROUGHPUT = 0.1f;
+    final float THROUGHPUT = 0.5f;
     final float MAX_X = 1440f;
     final float MAX_Y = 2060f;
 
@@ -116,25 +117,27 @@ public class MainActivity extends AppCompatActivity {
         Direction direction = getDirection(degrees[0]);
         accel[0] -= gravity[0];
         accel[1] -= gravity[1];
-        accel[2] -= gravity[2];
+        accel[2] -= gravity[2] - 0.35;
         // only think about z-axis velocity
         if (Math.abs(accel[2]) > THROUGHPUT) {
             velocity += accel[2] * 0.05;
-            velocityView.setText(String.valueOf(velocity));
-            switch (direction) {
-                case UP:
-                    directionView.setText("UP");
-                    break;
-                case RIGHT:
-                    directionView.setText("RIGHT");
-                    break;
-                case DOWN:
-                    directionView.setText("DOWN");
-                    break;
-                case LEFT:
-                    directionView.setText("LEFT");
-                    break;
-            }
+//            velocityView.setText(String.valueOf(velocity));
+////            velocityView.setText(String.valueOf(accel[2]));
+//            switch (direction) {
+//                case UP:
+//                    directionView.setText("UP");
+//                    break;
+//                case RIGHT:
+//                    directionView.setText("RIGHT");
+//                    break;
+//                case DOWN:
+//                    directionView.setText("DOWN");
+//                    break;
+//                case LEFT:
+//                    directionView.setText("LEFT");
+//                    break;
+//            }
+//            rollView.setText(String.valueOf(degrees[2]));
         }
         drawView.draw(direction, velocity);
         // Display the compass direction
@@ -184,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
             super(context);
 
             paint = new Paint();
-            paint.setStrokeWidth(5f);
+            paint.setStrokeWidth(10f);
             paint.setStyle(Paint.Style.STROKE);
             paint.setColor(Color.BLACK);
 
@@ -201,22 +204,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public boolean onTouchEvent(MotionEvent event) {
             Log.d("##### onTouchEvent", "x:" + event.getX() + ", y:" + event.getY());
+            if (isTouched)
+                return true;
+
             x = event.getX();
             y = event.getY();
             path.moveTo(x, y);
             invalidate();
             isTouched = true;
-
-//            switch (event.getAction()) {
-//                case MotionEvent.ACTION_DOWN:
-//                    path.moveTo(x, y);
-//                    break;
-//                case MotionEvent.ACTION_MOVE:
-//                    path.lineTo(x, y);
-//                case MotionEvent.ACTION_UP:
-//                    break;
-//            }
-//            invalidate();
 
             return true;
         }
@@ -226,12 +221,12 @@ public class MainActivity extends AppCompatActivity {
                 return;
             Log.d("#####", "draw");
 
-            float distance = velocity * 0.5f;
+            float distance = velocity * 0.1f;
             switch (direction) {
                 case UP:
                     Log.d("#####", "UP distance:" + distance);
-                    if (y + distance > 0 && y + distance < MAX_Y)
-                        y += distance;
+                    if (y - distance > 0 && y - distance < MAX_Y)
+                        y -= distance;
                     break;
                 case RIGHT:
                     Log.d("#####", "RIGHT distance:" + distance);
@@ -240,8 +235,8 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case DOWN:
                     Log.d("#####", "DOWN distance:" + distance);
-                    if (y - distance > 0 && y - distance < MAX_Y)
-                        y -= distance;
+                    if (y + distance > 0 && y + distance < MAX_Y)
+                        y += distance;
                     break;
                 case LEFT:
                     Log.d("#####", "LEFT distance:" + distance);
@@ -253,46 +248,7 @@ public class MainActivity extends AppCompatActivity {
             invalidate();
         }
     }
-
-    private void buttonClick (int number)
-    {
-        switch (number)
-        {
-            case 1:
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
-            case 5:
-                break;
-            case 6:
-                break;
-            case 7:
-                break;
-            case 8:
-                break;
-            case 9:
-                break;
-            default:
-                Toast.makeText(this, "Wrong button number!", Toast.LENGTH_SHORT).show();
-        }
-
-        startMove();
-    }
-
-    private void startMove ()
-    {
-
-    }
-
-    private void stopMove ()
-    {
-
-    }
-
+/*
     @OnClick(R.id.recognize_button)
     public void goRecognize (Button button)
     {
@@ -322,64 +278,5 @@ public class MainActivity extends AppCompatActivity {
     {
         startActivity(new Intent(this, MagneticActivity.class));
     }
-
-    @OnClick(R.id.stop_button)
-    public void clickStop (Button button)
-    {
-        stopMove();
-    }
-
-    @OnClick(R.id.button1)
-    public void click1 (ImageView imageView)
-    {
-        buttonClick(1);
-    }
-
-    @OnClick(R.id.button2)
-    public void click2 (ImageView imageView)
-    {
-        buttonClick(2);
-    }
-
-    @OnClick(R.id.button3)
-    public void click3 (ImageView imageView)
-    {
-        buttonClick(3);
-    }
-
-    @OnClick(R.id.button4)
-    public void click4 (ImageView imageView)
-    {
-        buttonClick(4);
-    }
-
-    @OnClick(R.id.button5)
-    public void click5 (ImageView imageView)
-    {
-        buttonClick(5);
-    }
-
-    @OnClick(R.id.button6)
-    public void click6 (ImageView imageView)
-    {
-        buttonClick(6);
-    }
-
-    @OnClick(R.id.button7)
-    public void click7 (ImageView imageView)
-    {
-        buttonClick(7);
-    }
-
-    @OnClick(R.id.button8)
-    public void click8 (ImageView imageView)
-    {
-        buttonClick(8);
-    }
-
-    @OnClick(R.id.button9)
-    public void click9 (ImageView imageView)
-    {
-        buttonClick(9);
-    }
+*/
 }
