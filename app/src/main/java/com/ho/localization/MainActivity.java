@@ -12,6 +12,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import butterknife.BindView;
@@ -28,6 +30,9 @@ import butterknife.OnClick;
 public class MainActivity extends AppCompatActivity {
 
     enum Direction {UP, RIGHT, DOWN, LEFT}
+
+    @BindView(R.id.velocity) TextView velocityView;
+    private DrawView drawView;
 
     private SensorManager manager;
     private SensorEventListener listener;
@@ -40,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
     private float velocity;
 
     final float THROUGHPUT = 0.1f;
+    final float MAX_X = 1440f;
+    final float MAX_Y = 2060f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +55,12 @@ public class MainActivity extends AppCompatActivity {
         LayoutInflater inflater = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         RelativeLayout relativeLayout = (RelativeLayout)inflater.inflate(R.layout.activity_main, null);
 
-//        DrawView drawView = new DrawView(this);
-//        RelativeLayout.LayoutParams drawParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-//        drawView.setLayoutParams(drawParams);
-//        drawView.setBackgroundColor(Color.TRANSPARENT);
+        drawView = new DrawView(this);
+        RelativeLayout.LayoutParams drawParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        drawView.setLayoutParams(drawParams);
+        drawView.setBackgroundColor(Color.TRANSPARENT);
 
-//        relativeLayout.addView(drawView);
+        relativeLayout.addView(drawView);
 
         setContentView(relativeLayout);
         ButterKnife.bind(this);
@@ -102,6 +109,9 @@ public class MainActivity extends AppCompatActivity {
             degrees[i] = (float)Math.toDegrees(degrees[i]);
         }
 
+        if (!isInPocket(degrees[1], degrees[2]))
+            return;
+
         Direction direction = getDirection(degrees[0]);
         accel[0] -= gravity[0];
         accel[1] -= gravity[1];
@@ -109,12 +119,19 @@ public class MainActivity extends AppCompatActivity {
         // only think about z-axis velocity
         if (Math.abs(accel[2]) > THROUGHPUT) {
             velocity += accel[2] * 0.05;
+            velocityView.setText(String.valueOf(velocity));
         }
-        draw(direction);
+        drawView.draw(direction, velocity);
         // Display the compass direction
 //        direction.setText(getDirectionFromDegree(values[0]) + values[0]);
         // Display the raw values
 //        value.setText(String.format("Azimuth: %1$1.2f, Pitch: %2$1.2f, Roll: %3$1.2f", values[0], values[1], values[2]));
+    }
+
+    private boolean isInPocket(float pitch, float roll) {
+        if (pitch > -15 && pitch < 5 && roll > -95 && roll < -80)
+            return true;
+        return false;
     }
 
     private Direction getDirection (float azimuth) {
@@ -126,10 +143,6 @@ public class MainActivity extends AppCompatActivity {
             return Direction.UP;
         else
             return Direction.RIGHT;
-    }
-
-    private void draw(Direction direction) {
-
     }
 
     @Override
@@ -149,6 +162,8 @@ public class MainActivity extends AppCompatActivity {
     private class DrawView extends View {
         Paint paint;
         Path path;
+        boolean isTouched;
+        float x, y;
 
         public DrawView(Context context) {
             super(context);
@@ -159,6 +174,7 @@ public class MainActivity extends AppCompatActivity {
             paint.setColor(Color.BLACK);
 
             path = new Path();
+            isTouched = false;
         }
 
         @Override
@@ -169,21 +185,47 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onTouchEvent(MotionEvent event) {
-            float x = event.getX();
-            float y = event.getY();
-
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    path.moveTo(x, y);
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    path.lineTo(x, y);
-                case MotionEvent.ACTION_UP:
-                    break;
-            }
+            Log.d("##### onTouchEvent", "x:" + event.getX() + ", y:" + event.getY());
+            x = event.getX();
+            y = event.getY();
+            path.moveTo(x, y);
             invalidate();
 
+//            switch (event.getAction()) {
+//                case MotionEvent.ACTION_DOWN:
+//                    path.moveTo(x, y);
+//                    break;
+//                case MotionEvent.ACTION_MOVE:
+//                    path.lineTo(x, y);
+//                case MotionEvent.ACTION_UP:
+//                    break;
+//            }
+//            invalidate();
+
             return true;
+        }
+
+        public void draw(Direction direction, float velocity) {
+            if (!isTouched)
+                return;
+
+            float distance = velocity * 0.05f;
+            switch (direction) {
+                case UP:
+                    if (y + distance > 0 && y + distance < MAX_Y)
+                        y += distance;
+                case RIGHT:
+                    if (x + distance > 0 && x + distance < MAX_X)
+                        x += distance;
+                case DOWN:
+                    if (y - distance > 0 && y - distance < MAX_Y)
+                        y -= distance;
+                case LEFT:
+                    if (x - distance > 0 && x - distance < MAX_X)
+                        x -= distance;
+            }
+            path.lineTo(x, y);
+            invalidate();
         }
     }
 
