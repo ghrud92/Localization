@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     enum Direction {UP, RIGHT, DOWN, LEFT}
 
     @BindView(R.id.velocity) TextView velocityView;
+    @BindView(R.id.direction) TextView directionView;
     private DrawView drawView;
 
     private SensorManager manager;
@@ -120,6 +121,20 @@ public class MainActivity extends AppCompatActivity {
         if (Math.abs(accel[2]) > THROUGHPUT) {
             velocity += accel[2] * 0.05;
             velocityView.setText(String.valueOf(velocity));
+            switch (direction) {
+                case UP:
+                    directionView.setText("UP");
+                    break;
+                case RIGHT:
+                    directionView.setText("RIGHT");
+                    break;
+                case DOWN:
+                    directionView.setText("DOWN");
+                    break;
+                case LEFT:
+                    directionView.setText("LEFT");
+                    break;
+            }
         }
         drawView.draw(direction, velocity);
         // Display the compass direction
@@ -129,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean isInPocket(float pitch, float roll) {
-        if (pitch > -15 && pitch < 5 && roll > -95 && roll < -80)
+        if (pitch > -20 && pitch < 10 && roll > -105 && roll < -75)
             return true;
         return false;
     }
@@ -190,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
             y = event.getY();
             path.moveTo(x, y);
             invalidate();
+            isTouched = true;
 
 //            switch (event.getAction()) {
 //                case MotionEvent.ACTION_DOWN:
@@ -208,21 +224,30 @@ public class MainActivity extends AppCompatActivity {
         public void draw(Direction direction, float velocity) {
             if (!isTouched)
                 return;
+            Log.d("#####", "draw");
 
-            float distance = velocity * 0.05f;
+            float distance = velocity * 0.5f;
             switch (direction) {
                 case UP:
+                    Log.d("#####", "UP distance:" + distance);
                     if (y + distance > 0 && y + distance < MAX_Y)
                         y += distance;
+                    break;
                 case RIGHT:
+                    Log.d("#####", "RIGHT distance:" + distance);
                     if (x + distance > 0 && x + distance < MAX_X)
                         x += distance;
+                    break;
                 case DOWN:
+                    Log.d("#####", "DOWN distance:" + distance);
                     if (y - distance > 0 && y - distance < MAX_Y)
                         y -= distance;
+                    break;
                 case LEFT:
+                    Log.d("#####", "LEFT distance:" + distance);
                     if (x - distance > 0 && x - distance < MAX_X)
                         x -= distance;
+                    break;
             }
             path.lineTo(x, y);
             invalidate();
